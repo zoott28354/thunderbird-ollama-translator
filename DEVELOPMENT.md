@@ -6,7 +6,8 @@
 
 - [x] **Traduzione esclusivamente locale con Ollama**
 - [x] **Traduzione multilingua** (10 lingue supportate)
-- [x] **Menu contestuale multilingua** - "Traduci con Ollama ▶" con 10 lingue
+- [x] **Interfaccia multilingue** (7 lingue): 🇮🇹 IT, 🇬🇧 EN, 🇩🇪 DE, 🇫🇷 FR, 🇪🇸 ES, 🇵🇹 PT, 🇷🇺 RU
+- [x] **Menu contestuale multilingua** - "Traduci con Ollama ▶" con 10 lingue (localizzato)
 - [x] **Evidenziazione grassetto Unicode** - Lingua selezionata mostrata in bold nel menu
 - [x] Pulsante floating azzurro nella email
 - [x] Contesto completo (tutto il testo tradotto in una richiesta)
@@ -15,7 +16,6 @@
 - [x] Test di connessione a Ollama
 - [x] Interfaccia opzioni avanzata
 - [x] Toast notifications (messaggi in basso a destra)
-- [x] Interfaccia utente localizzata (en, it, de)
 - [x] **Traduzioni multiple** - Preserva testo originale tra traduzioni successive
 - [x] **CORS permissions** - Accesso a servizi esterni configurato correttamente
 - [x] **Logging dettagliato** - Per debugging e sviluppo
@@ -150,15 +150,14 @@ async function startTranslation() { ... }
 btn.style.cssText = `...`  // ← Modificare CSS qui
 ```
 
-## 🐛 Problemi Risolti (v1.0.1)
+## 🐛 Problemi Risolti (v2.0.0-ollama-only)
 
 | Problema | Stato | Commit |
 |----------|-------|--------|
-| CORS errors per Google/LibreTranslate | ✅ RISOLTO | 20bec9a |
-| Google Translate parsava solo primo segmento | ✅ RISOLTO | 20bec9a |
-| LibreTranslate richiedeva API key | ✅ RISOLTO | 20bec9a |
-| Traduzioni multiple non funzionavano | ✅ RISOLTO | 20bec9a |
-| Ollama 403 Forbidden | ✅ RISOLTO (docs) | 20bec9a |
+| Traduzioni multiple non funzionavano | ✅ RISOLTO | 84100a8 |
+| Ollama 403 Forbidden | ✅ RISOLTO (docs) | 84100a8 |
+| Menu contestuale hardcoded in italiano | ✅ RISOLTO | cbf02b5 |
+| Interfaccia solo in 3 lingue | ✅ RISOLTO | cbf02b5 |
 
 ## 🐛 Problemi Noti (da risolvere)
 
