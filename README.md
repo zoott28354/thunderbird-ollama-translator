@@ -10,6 +10,7 @@ Un addon per Thunderbird che traduce le email usando Ollama locale - **Privacy t
 - 🔄 **Toggle Originale/Traduzione** - Passa facilmente tra testo originale e tradotto
 - ⚡ **Veloce** - Usa modello translategemma (3GB, ottimizzato per traduzioni)
 - 🔒 **Privacy Assoluta** - Tutto elaborato localmente, zero tracking
+- 🌐 **Interfaccia multilingue** - L'addon è disponibile in 7 lingue: 🇮🇹 Italiano, 🇬🇧 English, 🇩🇪 Deutsch, 🇫🇷 Français, 🇪🇸 Español, 🇵🇹 Português, 🇷🇺 Русский (si adatta automaticamente alla lingua di Thunderbird)
 
 ## 📋 Requisiti
 
