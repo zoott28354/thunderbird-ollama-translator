@@ -4,7 +4,7 @@
     "description": "Nome dell'applicazione"
   },
   "appDescription": {
-    "message": "Traduci le email usando Ollama, Google Translate o LibreTranslate",
+    "message": "Traduci le email usando Ollama locale - Privacy totale",
     "description": "Descrizione dell'applicazione"
   },
   "noText": {

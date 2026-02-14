@@ -16,7 +16,6 @@ function translatePage() {
   });
 }
 
-const serviceSelect = document.getElementById("service");
 const targetLanguageSelect = document.getElementById("targetLanguage");
 const ollamaSection = document.getElementById("ollamaSection");
 const urlInput = document.getElementById("ollamaUrl");
@@ -25,11 +24,6 @@ const refreshBtn = document.getElementById("refreshModels");
 const testBtn = document.getElementById("testConnection");
 const saveBtn = document.getElementById("save");
 const statusDiv = document.getElementById("status");
-
-// Mostra/nascondi la sezione Ollama
-serviceSelect.addEventListener("change", () => {
-  ollamaSection.style.display = serviceSelect.value === "ollama" ? "block" : "none";
-});
 
 function showStatus(messageKey, isError, replacements = {}) {
   let message = browser.i18n.getMessage(messageKey, Object.values(replacements));
@@ -44,18 +38,11 @@ function clearStatus() {
 
 async function loadSettings() {
   const settings = await browser.runtime.sendMessage({ command: "getSettings" });
-  
-  serviceSelect.value = settings.service || "ollama";
+
   targetLanguageSelect.value = settings.targetLanguage || "it";
   urlInput.value = settings.ollamaUrl || "http://localhost:11434";
-  
-  // Mostra/nascondi la sezione Ollama
-  ollamaSection.style.display = serviceSelect.value === "ollama" ? "block" : "none";
 
-  // Carica modelli solo se Ollama
-  if (serviceSelect.value === "ollama") {
-    await loadModels(settings.model);
-  }
+  await loadModels(settings.model);
 }
 
 async function loadModels(selectedModel) {
@@ -137,34 +124,25 @@ testBtn.addEventListener("click", async () => {
 saveBtn.addEventListener("click", async () => {
   clearStatus();
 
-  const service = serviceSelect.value;
   const targetLanguage = targetLanguageSelect.value;
   const ollamaUrl = urlInput.value.trim();
   const model = modelSelect.value;
 
-  // Valida i campi Ollama solo se Ollama è selezionato
-  if (service === "ollama") {
-    if (!ollamaUrl) {
-      showStatus("urlRequired", true);
-      return;
-    }
-    if (!model) {
-      showStatus("modelRequired", true);
-      return;
-    }
+  // Valida campi Ollama (sempre obbligatori ora)
+  if (!ollamaUrl) {
+    showStatus("urlRequired", true);
+    return;
   }
-
-  // Salva TUTTI i campi sempre, non solo quando Ollama è selezionato
-  const settings = {
-    service,
-    targetLanguage,
-    ollamaUrl,
-    model,
-  };
+  if (!model) {
+    showStatus("modelRequired", true);
+    return;
+  }
 
   await browser.runtime.sendMessage({
     command: "saveSettings",
-    ...settings,
+    targetLanguage,
+    ollamaUrl,
+    model,
   });
 
   showStatus("settingsSaved", false);

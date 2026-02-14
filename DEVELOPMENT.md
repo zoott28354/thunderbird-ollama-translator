@@ -1,17 +1,13 @@
 # Thunderbird Ollama Translator - Documentazione Sviluppo
 
-## 📊 Stato Attuale (v2.0.0)
+## 📊 Stato Attuale (v2.0.0-ollama-only)
 
 ### ✅ Funzionalità Implementate
 
-- [x] **Servizi di traduzione multipli**:
-  - [x] Ollama (locale, privato)
-  - [x] Google Translate (online, gratuito)
-  - [x] LibreTranslate (online, open-source)
+- [x] **Traduzione esclusivamente locale con Ollama**
 - [x] **Traduzione multilingua** (10 lingue supportate)
-- [x] **Menu contestuale per servizio** - 3 menu parent separati (Ollama, Google, LibreTranslate)
-- [x] **Lingua indipendente per servizio** - Ogni servizio ricorda la propria lingua target
-- [x] **Evidenziazione grassetto** - Lingua selezionata mostrata in bold nel menu
+- [x] **Menu contestuale multilingua** - "Traduci con Ollama ▶" con 10 lingue
+- [x] **Evidenziazione grassetto Unicode** - Lingua selezionata mostrata in bold nel menu
 - [x] Pulsante floating azzurro nella email
 - [x] Contesto completo (tutto il testo tradotto in una richiesta)
 - [x] Toggle originale/traduzione

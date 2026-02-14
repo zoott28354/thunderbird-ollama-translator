@@ -1,18 +1,15 @@
 # Thunderbird Ollama Translator
 
-Un addon per Thunderbird che traduce le email in italiano usando un'istanza locale di Ollama.
+Un addon per Thunderbird che traduce le email usando Ollama locale - **Privacy totale**, nessun dato inviato online MAI.
 
-## 🚀 Caratteristiche
+## ✨ Caratteristiche
 
-- **Traduzione locale** - Non invia dati online, tutto rimane sul tuo PC
-- **Supporta tutti i modelli Ollama** - Llama, Mistral, Neural Chat, ecc.
-- **Supporta diversi servizi di traduzione** - Ollama, Google Translate, LibreTranslate
-- **Traduzione in più lingue** - Non solo italiano, ma anche English, Español, Français, Deutsch, e altre
-- **Interfaccia semplice** - Fai clic destro sulla email e seleziona "Traduci in italiano"
-- **Pulsante veloce** - Alternativa al menu contestuale
-- **Toggle** - Passa facilmente tra testo originale e tradotto
-- **Impostazioni persistenti** - Le tue configurazioni si salvano automaticamente
-- **Interfaccia localizzata** - Supporto per diverse lingue
+- 🏠 **100% Locale** - Nessun dato inviato online, MAI
+- 🌍 **10 Lingue** - italiano, English, Español, Français, Deutsch, Português, Русский, 日本語, 中文, 한국어
+- 🖱️ **Menu Contestuale** - Click destro per tradurre in qualsiasi lingua
+- 🔄 **Toggle Originale/Traduzione** - Passa facilmente tra testo originale e tradotto
+- ⚡ **Veloce** - Usa modello translategemma (3GB, ottimizzato per traduzioni)
+- 🔒 **Privacy Assoluta** - Tutto elaborato localmente, zero tracking
 
 ## 📋 Requisiti
 
@@ -69,13 +66,6 @@ Un addon per Thunderbird che traduce le email in italiano usando un'istanza loca
 
 4. **Thunderbird** - Versione 128 o superiore
 
-### Per usare Google Translate o LibreTranslate (online, gratuiti)
-
-- **Nessun requisito** - Funzionano immediatamente
-- **Connessione internet** richiesta
-- Google Translate: API non ufficiale (gratuita ma potrebbe avere limiti)
-- LibreTranslate: Istanza pubblica gratuita (translate.fedilab.app)
-
 ## 📦 Installazione
 
 ### Metodo 1: File XPI (Raccomandato)
@@ -105,17 +95,10 @@ Un addon per Thunderbird che traduce le email in italiano usando un'istanza loca
    - Cerca "Ollama Translator"
    - Clicca su **"Preferences"**
 
-2. **Scegli il servizio di traduzione**:
-   - **Ollama** (locale, privato) - Richiede installazione
-   - **Google Translate** (online, gratuito) - Funziona subito
-   - **LibreTranslate** (online, open-source) - Funziona subito
-
-3. **Scegli la lingua di destinazione**:
+2. **Scegli la lingua di destinazione**:
    - Italiano, English, Español, Français, Deutsch, Português, Русский, 日本語, 中文, 한국어
 
-### Se usi Ollama:
-
-4. **⚠️ PRIMO PASSO OBBLIGATORIO - Configura OLLAMA_ORIGINS**:
+3. **⚠️ PRIMO PASSO OBBLIGATORIO - Configura OLLAMA_ORIGINS**:
 
    **Prima** di usare l'addon con Ollama, devi configurare questa variabile d'ambiente (vedi sezione "Requisiti" sopra per istruzioni dettagliate).
 
@@ -153,22 +136,16 @@ Un addon per Thunderbird che traduce le email in italiano usando un'istanza loca
 ### Menu Contestuale (Raccomandato)
 1. **Apri una email** che vuoi tradurre
 2. **Fai clic destro** sul corpo del testo
-3. **Scegli il servizio** di traduzione:
-   - **"Traduci con Ollama"** → Traduzione locale e privata (richiede Ollama installato)
-   - **"Traduci con Google Translate"** → Traduzione online gratuita
-   - **"Traduci con LibreTranslate"** → Traduzione online open-source
-4. **Seleziona la lingua** di destinazione dal sottomenu
+3. **Seleziona "Traduci con Ollama ▶"** e scegli la lingua
    - La lingua selezionata apparirà in **grassetto**
-   - Questa scelta diventa il default per quel servizio
-5. Attendi il messaggio "Traduzione completata"
-
-**Esempio**: Se selezioni "Traduci con Google Translate > Español", tutte le successive traduzioni con Google Translate saranno in spagnolo (finché non scegli un'altra lingua).
+   - Questa scelta diventa il default
+4. Attendi il messaggio "Traduzione completata"
 
 ### Metodo Alternativo: Pulsante Veloce
 1. **Apri una email**
 2. Guarda l'**angolo in alto a destra** della email
 3. Clicca il **pulsante blu** 🌐 **"Translate"**
-4. Verrà usato il servizio e la lingua configurati nelle impostazioni
+4. Verrà usata la lingua configurata nelle impostazioni
 
 ### Toggle Originale/Traduzione
 - Dopo la traduzione, fai **clic destro** sul testo
@@ -178,22 +155,24 @@ Un addon per Thunderbird che traduce le email in italiano usando un'istanza loca
 ## 🔒 Sicurezza
 
 ### ✅ Cosa è Sicuro
-- **Nessun dato inviato online** - Tutto viene elaborato localmente da Ollama
-- **Connection locale** - Comunica solo con `localhost:11434`
-- **Nessuna traccia** - Non ci sono statistiche, tracking o log remoti
-- **Nessuna credenziale** - Non salva password o informazioni sensibili
-- **Permessi minimi** - Accede solo al testo della email per tradurre
 
-### 🛡️ Permessi Richiesti
-- `messagesRead` - Legge il contenuto della email (per tradurre)
-- `messagesModify` - Modifica il testo visualizzato (per mostrare la traduzione)
+- **Nessun dato inviato online MAI** - Tutto viene elaborato localmente da Ollama
+- **Connessione locale** - Comunica solo con `localhost:11434`
+- **Nessuna traccia** - Non ci sono statistiche, tracking o log remoti
+- **Nessuna API key** - Non serve nessuna chiave API o registrazione
+- **Open Source** - Codice completamente ispezionabile
+
+### 🔐 Permessi Richiesti
+
+L'addon richiede solo questi permessi Thunderbird:
+- `messagesRead` - Legge il contenuto delle email
+- `messagesModify` - Sostituisce il testo con la traduzione
 - `menus` - Aggiunge il menu contestuale
 - `storage` - Salva le impostazioni
 - `tabs` - Inietta lo script nella email
-- **Host permissions** (solo se usi Google Translate o LibreTranslate):
-  - `https://translate.google.com/*` - API Google Translate
-  - `https://translate.fedilab.app/*` - Istanza LibreTranslate
-  - `http://localhost/*` - Per Ollama locale
+- `http://localhost/*` - Per comunicare con Ollama locale
+
+**Nessun accesso a servizi esterni**
 
 Nessun accesso a:
 - ❌ Rubrica, calendario, chat
@@ -257,26 +236,13 @@ Nessun accesso a:
 - Verifica che sia sulla porta 11434: `curl http://localhost:11434/api/tags`
 - Controlla l'URL nelle impostazioni
 
-### Google Translate non traduce tutto il testo
-- **RISOLTO** nella versione corrente (concatena tutti i segmenti)
-- Se il problema persiste, ricarica l'addon
-
-### La prima traduzione funziona ma le successive no
-- **RISOLTO** nella versione corrente (preserva testo originale)
-- Il bug è stato corretto nel commit più recente
-
-### LibreTranslate da errore "API key required"
-- **RISOLTO** nella versione corrente (usa istanza gratuita fedilab.app)
-- L'addon prova automaticamente 3 istanze diverse
-
-### La traduzione è lenta (solo Ollama)
+### La traduzione è lenta
 - Verifica che il modello sia completamente caricato in memoria
 - Modelli veloci: translategemma (~3GB), llama3.2, mistral (~4GB)
 - Modelli lenti: llama2, neural-chat (~7GB+)
 
 ### La traduzione non è accurata
-- Prova un servizio diverso (Google Translate è molto accurato)
-- Per Ollama: prova un modello diverso
+- Prova un modello diverso
 - **Raccomandato**: `translategemma` (specializzato per traduzioni)
 - Alternative: `llama3.2`, `neural-chat`
 
