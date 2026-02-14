@@ -66,7 +66,7 @@ async function createContextMenu() {
     // Create Ollama menu with language submenus
     await messenger.menus.create({
       id: "translate-parent",
-      title: "Traduci con Ollama ▶",
+      title: browser.i18n.getMessage("contextMenuTitle"),
       contexts: ["all"],
     });
 
