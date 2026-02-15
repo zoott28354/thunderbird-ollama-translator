@@ -120,7 +120,7 @@
     "description": "Suffisso per modello non trovato"
   },
   "contextMenuTitle": {
-    "message": "Traduci con Ollama ▶",
+    "message": "Traduci con Ollama",
     "description": "Titolo menu contestuale"
   }
 }

@@ -120,7 +120,7 @@
     "description": "Sufixo para modelo não encontrado"
   },
   "contextMenuTitle": {
-    "message": "Traduzir com Ollama ▶",
+    "message": "Traduzir com Ollama",
     "description": "Título do menu contextual"
   }
 }

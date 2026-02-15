@@ -120,7 +120,7 @@
     "description": "Суффикс для ненайденной модели"
   },
   "contextMenuTitle": {
-    "message": "Перевести с Ollama ▶",
+    "message": "Перевести с Ollama",
     "description": "Заголовок контекстного меню"
   }
 }

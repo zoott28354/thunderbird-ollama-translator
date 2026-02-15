@@ -105,12 +105,6 @@ OLLAMA_ORIGINS=moz-extension://*,http://localhost:11434
    - Questa scelta diventa il default
 4. Attendi il messaggio "Traduzione completata"
 
-### Metodo Alternativo: Pulsante Veloce
-1. **Apri una email**
-2. Guarda l'**angolo in alto a destra** della email
-3. Clicca il **pulsante blu** 🌐 **"Translate"**
-4. Verrà usata la lingua configurata nelle impostazioni
-
 ### Toggle Originale/Traduzione
 - Dopo la traduzione, fai **clic destro** sul testo
 - Seleziona **"Mostra originale"** per vedere il testo originale
