@@ -308,6 +308,9 @@
   async function translateNodeByNode(block) {
     console.log(`[Translator] Translating ${block.nodes.length} nodes individually`);
 
+    // First pass: collect all translations without modifying DOM
+    const translations = [];
+
     for (let i = 0; i < block.nodes.length; i++) {
       const node = block.nodes[i];
       const existingData = nodeMap.get(node);
@@ -315,8 +318,11 @@
         ? existingData.original
         : node.textContent.trim();
 
+      console.log(`[Translator] Node ${i} original text: "${originalText.substring(0, 100)}..." (length: ${originalText.length})`);
+
       if (originalText.length < MIN_TEXT_LENGTH) {
         console.log(`[Translator] Skipping node ${i} (too short: ${originalText.length} chars)`);
+        translations.push({ node, originalText, translatedText: originalText, skip: true });
         continue;
       }
 
@@ -324,11 +330,22 @@
       const translatedText = await sendTranslateRequest(originalText);
       console.log(`[Translator] Got translation for node ${i}: "${translatedText.substring(0, 50)}..."`);
 
-      nodeMap.set(node, {
-        original: originalText,
-        translated: translatedText,
-      });
-      node.textContent = translatedText;
+      translations.push({ node, originalText, translatedText, skip: false });
+    }
+
+    // Second pass: apply all translations to DOM
+    console.log(`[Translator] Applying ${translations.length} translations to DOM`);
+    for (let i = 0; i < translations.length; i++) {
+      const { node, originalText, translatedText, skip } = translations[i];
+
+      if (!skip) {
+        nodeMap.set(node, {
+          original: originalText,
+          translated: translatedText,
+        });
+        node.textContent = translatedText;
+        console.log(`[Translator] Applied translation ${i}: "${translatedText.substring(0, 50)}..."`);
+      }
     }
   }
 
