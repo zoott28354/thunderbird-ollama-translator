@@ -102,10 +102,10 @@ messenger.runtime.onInstalled.addListener(() => {
 });
 
 // --- Update context menu when settings change ---
-messenger.storage.onChanged.addListener((changes, area) => {
+messenger.storage.onChanged.addListener(async (changes, area) => {
   if (area === "local" && changes.targetLanguage) {
     console.log("[Translator] Target language changed, updating menu");
-    createContextMenu();
+    await createContextMenu();
   }
 });
 
