@@ -63,13 +63,7 @@ async function createContextMenu() {
 
     const languages = Object.keys(LANGUAGE_NAMES);
 
-    // Create Ollama menu with language submenus
-    await messenger.menus.create({
-      id: "translate-parent",
-      title: browser.i18n.getMessage("contextMenuTitle"),
-      contexts: ["all"],
-    });
-
+    // Create language menu items directly (attached to implicit parent)
     for (const langCode of languages) {
       const langName = LANGUAGE_NAMES[langCode];
       const isSelected = langCode === targetLanguage;
@@ -77,14 +71,13 @@ async function createContextMenu() {
 
       await messenger.menus.create({
         id: `translate-${langCode}`,
-        parentId: "translate-parent",
         title: title,
         contexts: ["all"],
       });
     }
 
     menuCreated = true;
-    console.log(`[Translator] Menu created with ${languages.length} language options for Ollama`);
+    console.log(`[Translator] Created ${languages.length} language options attached to extension parent`);
   } catch (e) {
     console.warn("[Translator] Error in createContextMenu:", e.message);
   }
