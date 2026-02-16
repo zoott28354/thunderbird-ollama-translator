@@ -1,6 +1,6 @@
 # Thunderbird Ollama Translator - Documentazione Sviluppo
 
-## 📊 Stato Attuale (v2.0.0-ollama-only)
+## 📊 Stato Attuale (v2.0.0)
 
 ### ✅ Funzionalità Implementate
 
@@ -150,7 +150,7 @@ async function startTranslation() { ... }
 btn.style.cssText = `...`  // ← Modificare CSS qui
 ```
 
-## 🐛 Problemi Risolti (v2.0.0-ollama-only)
+## 🐛 Problemi Risolti (v2.0.0)
 
 | Problema | Stato | Commit |
 |----------|-------|--------|
