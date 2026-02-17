@@ -170,7 +170,6 @@ messenger.runtime.onConnect.addListener((port) => {
 
     if (message.command === "translationComplete") {
       toggleMenuCreated = true;
-      showingOriginal = false;
       try {
         await messenger.menus.create({
           id: "toggle-original",
@@ -256,7 +255,6 @@ async function getInstalledModels(ollamaUrl) {
 // --- Toggle State ---
 
 let toggleMenuCreated = false;
-let showingOriginal = false;
 
 // --- Event Handlers ---
 
@@ -307,16 +305,9 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
       console.error("[Translator] Error injecting content script:", e);
     }
   } else if (info.menuItemId === "toggle-original") {
-    showingOriginal = !showingOriginal;
-    messenger.menus.update("toggle-original", {
-      title: showingOriginal 
-        ? browser.i18n.getMessage("showTranslation") 
-        : browser.i18n.getMessage("showOriginal"),
-    });
     if (activePort) {
       activePort.postMessage({
-        command: "toggleOriginal",
-        showOriginal: showingOriginal,
+        command: "reloadOriginal",
       });
     }
   }
