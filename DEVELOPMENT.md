@@ -4,11 +4,15 @@
 
 ### ✅ Funzionalità Implementate
 
-- [x] **Traduzione esclusivamente locale con Ollama**
+- [x] **Servizi di traduzione multipli**:
+  - [x] Ollama (locale, privato)
+  - [x] Google Translate (online, gratuito)
+  - [x] LibreTranslate (online, open-source)
 - [x] **Traduzione multilingua** (10 lingue supportate)
 - [x] **Interfaccia multilingue** (7 lingue): 🇮🇹 IT, 🇬🇧 EN, 🇩🇪 DE, 🇫🇷 FR, 🇪🇸 ES, 🇵🇹 PT, 🇷🇺 RU
-- [x] **Menu contestuale multilingua** - "Traduci con Ollama ▶" con 10 lingue (localizzato)
-- [x] **Evidenziazione grassetto Unicode** - Lingua selezionata mostrata in bold nel menu
+- [x] **Menu contestuale per servizio** - 3 menu parent separati (Ollama, Google, LibreTranslate)
+- [x] **Lingua indipendente per servizio** - Ogni servizio ricorda la propria lingua target
+- [x] **Evidenziazione grassetto** - Lingua selezionata mostrata in bold nel menu
 - [x] Pulsante floating azzurro nella email
 - [x] Contesto completo (tutto il testo tradotto in una richiesta)
 - [x] Toggle originale/traduzione
@@ -16,6 +20,7 @@
 - [x] Test di connessione a Ollama
 - [x] Interfaccia opzioni avanzata
 - [x] Toast notifications (messaggi in basso a destra)
+- [x] Interfaccia utente localizzata (en, it, de)
 - [x] **Traduzioni multiple** - Preserva testo originale tra traduzioni successive
 - [x] **CORS permissions** - Accesso a servizi esterni configurato correttamente
 - [x] **Logging dettagliato** - Per debugging e sviluppo
@@ -154,10 +159,13 @@ btn.style.cssText = `...`  // ← Modificare CSS qui
 
 | Problema | Stato | Commit |
 |----------|-------|--------|
-| Traduzioni multiple non funzionavano | ✅ RISOLTO | 84100a8 |
-| Ollama 403 Forbidden | ✅ RISOLTO (docs) | 84100a8 |
-| Menu contestuale hardcoded in italiano | ✅ RISOLTO | cbf02b5 |
-| Interfaccia solo in 3 lingue | ✅ RISOLTO | cbf02b5 |
+| CORS errors per Google/LibreTranslate | ✅ RISOLTO | 20bec9a |
+| Google Translate parsava solo primo segmento | ✅ RISOLTO | 20bec9a |
+| LibreTranslate richiedeva API key | ✅ RISOLTO | 20bec9a |
+| Traduzioni multiple non funzionavano | ✅ RISOLTO | 20bec9a |
+| Ollama 403 Forbidden | ✅ RISOLTO (docs) | 20bec9a |
+| Menu contestuale hardcoded in italiano | ✅ RISOLTO | 29d5498 |
+| Interfaccia solo in 3 lingue | ✅ RISOLTO | 29d5498 |
 | **Email plain text non tradotte** | ✅ RISOLTO | 9086524 / eb41d79 |
 | **Link tradotti da Ollama (output errato)** | ✅ RISOLTO | 3402f89 / 6ec704f |
 | **Menu "Mostra originale" con caratteri strani** | ✅ RISOLTO | 64b2e34 / ba62dd9 |
@@ -171,19 +179,16 @@ btn.style.cssText = `...`  // ← Modificare CSS qui
 - **Soluzione**: Rilevare blocchi tramite `parent.tagName === 'PRE'` invece di contare blocchi totali. Strategia ibrida:
   - Blocchi con parent PRE → `translateNodeByNode()` (preserva paragrafi)
   - Blocchi HTML → `translateByBlocks()` (performance)
-- **Files modificati**: `content/translator.js` (rimozione PRE da SKIP_TAGS, aggiunta a BLOCK_TAGS, rilevamento PRE in startTranslation)
 
 #### Link Translation Skip (3402f89 / 6ec704f)
 - **Problema**: URL come `https://github.com/settings/tokens` venivano inviati a Ollama, che restituiva le istruzioni del prompt invece della traduzione.
 - **Root Cause**: Nodi con parent `<A>` non erano filtrati. Ollama si confondeva ricevendo URL come testo da tradurre.
-- **Soluzione**: Skippa nodi con `parent.tagName === 'A'` o che matchano regex `/^https?:\\/\\/[^\\s]+$/` in `translateNodeByNode()`.
-- **Files modificati**: `content/translator.js` (aggiunta funzione isURL e skip logic in translateNodeByNode)
+- **Soluzione**: Skippa nodi con `parent.tagName === 'A'` o che matchano regex `/^https?:\/\/[^\s]+$/` in `translateNodeByNode()`.
 
 #### Menu i18n API (64b2e34 / ba62dd9)
 - **Problema**: Menu "Mostra originale" mostrava caratteri strani invece del testo localizzato.
 - **Root Cause**: Usava `browser.i18n.getMessage()` invece di `messenger.i18n.getMessage()`. Thunderbird usa `messenger.*` APIs.
-- **Soluzione**: Replace globale `browser.i18n` → `messenger.i18n` per consistenza (3 occorrenze in ollama-only, 4 in main).
-- **Files modificati**: `background.js` (sostituzione browser.i18n con messenger.i18n)
+- **Soluzione**: Replace globale `browser.i18n` → `messenger.i18n` per consistenza.
 
 #### Show Original Text Restoration (9cd60fa / 010d5a0)
 - **Problema**: Click su "Mostra originale" mostrava header MIME raw (`X-Mozilla-Status: 0001`, `Delivered-To`, etc.) invece dell'email formattata.
@@ -198,12 +203,6 @@ btn.style.cssText = `...`  // ← Modificare CSS qui
   nodeMap.clear();
   ```
   Vantaggi: Istantaneo, preserva scroll, nessun header raw, preserva layout.
-- **Files modificati**: `content/translator.js` (riscrittura completa funzione reloadPage), `background.js` (rimozione showingOriginal toggle logic)
-
-#### Cleanup Logging (7d6435e / 4d0fad0)
-- **Problema**: Console logging troppo verbose durante sviluppo rendeva difficile debugging.
-- **Soluzione**: Rimosso logging diagnostico verbose mantenendo solo log essenziali per operazioni principali.
-- **Files modificati**: `content/translator.js` (rimozione console.log dettagliati in startTranslation, translateNodeByNode, translateByBlocks)
 
 ## 🐛 Problemi Noti (da risolvere)
 
@@ -298,9 +297,8 @@ Se il progetto cresce:
 - **Storage per servizio**: Ogni servizio ha la propria lingua target salvata (ollamaTargetLang, googleTargetLang, libreTargetLang)
 - **Menu HTML bold**: Usa tag `<b>` nei titoli menu per evidenziare lingua selezionata (supportato da Thunderbird menus API)
 
-## 👤 Contatti & Credits
+## 👤 Credits
 
-- **Author**: giulio
 - **License**: MIT
 - **Created**: Febbraio 2026
 - **Status**: Stable (v2.0.0)
