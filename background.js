@@ -127,7 +127,7 @@ messenger.runtime.onConnect.addListener((port) => {
       // Send localized messages to content script
       const getMsg = (key, fallback) => {
         try {
-          return browser.i18n?.getMessage(key) || fallback;
+          return messenger.i18n?.getMessage(key) || fallback;
         } catch (e) {
           return fallback;
         }
@@ -173,12 +173,12 @@ messenger.runtime.onConnect.addListener((port) => {
       try {
         await messenger.menus.create({
           id: "toggle-original",
-          title: browser.i18n.getMessage("showOriginal"),
+          title: messenger.i18n.getMessage("showOriginal"),
           contexts: ["all"],
         });
       } catch (_) {
         messenger.menus.update("toggle-original", {
-          title: browser.i18n.getMessage("showOriginal"),
+          title: messenger.i18n.getMessage("showOriginal"),
           visible: true,
         });
       }
