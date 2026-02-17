@@ -105,10 +105,9 @@ OLLAMA_ORIGINS=moz-extension://*,http://localhost:11434
    - Questa scelta diventa il default
 4. Attendi il messaggio "Traduzione completata"
 
-### Toggle Originale/Traduzione
+### Mostra Originale
 - Dopo la traduzione, fai **clic destro** sul testo
-- Seleziona **"Mostra originale"** per vedere il testo originale
-- Seleziona di nuovo **"Mostra traduzione"** per tornare alla traduzione
+- Seleziona **"Mostra originale"** per ripristinare il testo originale
 
 ## 🔒 Sicurezza
 
@@ -139,11 +138,6 @@ Nessun accesso a:
 - ❌ File system (eccetto localhost per Ollama)
 
 ## 🚨 Troubleshooting
-
-### Il menu "Traduci in [lingua]" non appare
-- Ricarica l'addon: Menu > Tools > Add-ons > Ollama Translator > Ricarica
-- Prova un'altra email
-- Controlla che l'addon sia abilitato
 
 ### "Errore: Ollama error: 403 Forbidden" ⚠️
 
@@ -178,48 +172,6 @@ Nessun accesso a:
    - Dovrebbe mostrare "Connessione riuscita: X modelli disponibili"
 
 **Nota**: `moz-extension://*` permette solo a estensioni Firefox/Thunderbird di accedere a Ollama, bloccando siti web esterni (più sicuro).
-
-### "Errore: Ollama non raggiungibile"
-- Avvia Ollama: `ollama serve`
-- Verifica che sia sulla porta 11434: `curl http://localhost:11434/api/tags`
-- Controlla l'URL nelle impostazioni
-
-### La traduzione è lenta
-- Verifica che il modello sia completamente caricato in memoria
-- Modelli veloci: translategemma (~3GB), llama3.2, mistral (~4GB)
-- Modelli lenti: llama2, neural-chat (~7GB+)
-
-### La traduzione non è accurata
-- Prova un modello diverso
-- **Raccomandato**: `translategemma` (specializzato per traduzioni)
-- Alternative: `llama3.2`, `neural-chat`
-
-## 📊 Performance
-
-- **Email corta** (~5KB): 5-10 secondi
-- **Email media** (~50KB): 20-40 secondi
-- **Email lunga** (~500KB): 2-5 minuti
-
-*I tempi dipendono dal modello e dalla velocità di lettura/scrittura del disco.*
-
-## 🔧 Per Sviluppatori
-
-### Disabilitare i log di debug
-Se vuoi una versione più "pulita" senza i messaggi `[Translator]` nella console:
-1. Apri `background.js` e `content/translator.js`
-2. Rimuovi le righe con `console.log("[Translator]"`
-
-### Cambiare il modello di default
-Nel file `background.js`, modifica:
-```javascript
-const DEFAULT_MODEL = "llama3.2";  // Cambia qui
-```
-
-### Personalizzare il prompt di traduzione
-Nel file `background.js`, modifica:
-```javascript
-const TRANSLATE_PROMPT = `Translate the following text to Italian. ...`;
-```
 
 ## 📝 Licenza
 
