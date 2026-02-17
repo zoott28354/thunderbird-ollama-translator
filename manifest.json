@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Thunderbird Translator",
-  "version": "2.0.0",
-  "description": "Traduci le email usando Ollama, Google Translate, LibreTranslate o altri servizi",
+  "name": "Thunderbird Ollama Translator",
+  "version": "1.0.0",
+  "description": "Translate emails using local Ollama AI - 100% private",
   "author": "zoott28354",
   "default_locale": "en",
   "browser_specific_settings": {
@@ -17,13 +17,7 @@
     "menus",
     "storage",
     "tabs",
-    "http://localhost/*",
-    "https://translate.google.com/*",
-    "https://translate.googleapis.com/*",
-    "https://libretranslate.de/*",
-    "https://translate.fedilab.app/*",
-    "https://libretranslate.com/*",
-    "https://translate.argosopentech.com/*"
+    "http://localhost/*"
   ],
   "background": {
     "scripts": ["background.js"]
