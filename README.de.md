@@ -24,7 +24,7 @@ Eine Thunderbird-Erweiterung, die E-Mails mit lokalem Ollama übersetzt - **Voll
    - Empfohlen: `ollama pull translategemma` (3GB, optimiert)
    - Alternativen: `llama3.2`, `mistral`
 
-3. **Thunderbird** Version 128 oder höher
+3. **Thunderbird** 140x (esr)
 
 ⚠️ **Wichtiger Hinweis**: Bevor Sie die Erweiterung verwenden, müssen Sie `OLLAMA_ORIGINS` konfigurieren (siehe Abschnitt "Erstkonfiguration" unten).
 
