@@ -24,7 +24,7 @@ Un complemento de Thunderbird que traduce correos electrónicos usando Ollama lo
    - Recomendado: `ollama pull translategemma` (3GB, optimizado)
    - Alternativas: `llama3.2`, `mistral`
 
-3. **Thunderbird** versión 128 o superior
+3. **Thunderbird** 140x (esr)
 
 ⚠️ **Nota importante**: Antes de usar el complemento, necesitarás configurar `OLLAMA_ORIGINS` (ver la sección "Configuración inicial" a continuación).
 
