@@ -24,7 +24,7 @@ Un addon per Thunderbird che traduce le email usando Ollama locale - **Privacy t
    - Raccomandato: `ollama pull translategemma` (3GB, ottimizzato)
    - Alternative: `llama3.2`, `mistral`
 
-3. **Thunderbird** versione 128 o superiore
+3. **Thunderbird** 140x (esr)
 
 ⚠️ **Nota importante**: Prima di usare l'addon, dovrai configurare `OLLAMA_ORIGINS` (vedi sezione "Configurazione Iniziale" sotto).
 
