@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Thunderbird Ollama Translator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Translate emails using local Ollama AI - 100% private",
   "author": "zoott28354",
   "default_locale": "en",
@@ -17,11 +17,15 @@
     "menus",
     "storage",
     "tabs",
+    "scripting",
     "http://localhost/*"
   ],
   "background": {
     "scripts": ["background.js"]
   },
+  "message_display_scripts": [
+    "content/translator.js"
+  ],
   "options_ui": {
     "page": "options/options.html"
   },

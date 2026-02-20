@@ -256,6 +256,83 @@ async function getInstalledModels(ollamaUrl) {
 
 let toggleMenuCreated = false;
 
+// --- Inject content script as fallback ---
+// content/translator.js is declared in manifest as message_display_scripts
+// and is automatically loaded by Thunderbird whenever a message is displayed.
+// This function is only called when the port is not yet active.
+
+async function injectAndSend(targetLang) {
+  let tabId = null;
+
+  // Strategy 1: dedicated messageDisplay tab (email in separate window)
+  try {
+    const msgTabs = await messenger.tabs.query({ type: "messageDisplay" });
+    if (msgTabs.length > 0) {
+      tabId = msgTabs[0].id;
+      console.log("[Translator] Found messageDisplay tab:", tabId);
+    }
+  } catch (e) {
+    console.warn("[Translator] tabs.query messageDisplay failed:", e.message);
+  }
+
+  // Strategy 2: active mail tab (3-pane view)
+  if (tabId === null) {
+    try {
+      const mailTabs = await messenger.mailTabs.query({ active: true, currentWindow: true });
+      if (mailTabs.length > 0) {
+        const msg = await messenger.messageDisplay.getDisplayedMessage(mailTabs[0].id);
+        if (msg) {
+          tabId = mailTabs[0].id;
+          console.log("[Translator] Found active mail tab with message:", tabId);
+        }
+      }
+    } catch (e) {
+      console.warn("[Translator] mailTabs strategy failed:", e.message);
+    }
+  }
+
+  if (tabId === null) {
+    console.error("[Translator] No message display tab found - open an email first");
+    return;
+  }
+
+  console.log("[Translator] Injecting content script into tab:", tabId);
+  try {
+    await messenger.tabs.executeScript(tabId, {
+      file: "content/translator.js",
+      runAt: "document_start",
+      allFrames: false,
+    });
+    console.log("[Translator] Injection via tabs.executeScript succeeded");
+  } catch (e1) {
+    console.warn("[Translator] tabs.executeScript failed:", e1.message, "- trying scripting API");
+    try {
+      await messenger.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ["content/translator.js"],
+      });
+      console.log("[Translator] Injection via scripting.executeScript succeeded");
+    } catch (e2) {
+      console.error("[Translator] All injection methods failed:", e2.message);
+      return;
+    }
+  }
+
+  // Poll for port connection then send the command
+  let waited = 0;
+  const interval = setInterval(() => {
+    waited += 50;
+    if (activePort) {
+      clearInterval(interval);
+      console.log("[Translator] Port connected after injection, sending startTranslation");
+      activePort.postMessage({ command: "startTranslation", targetLanguage: targetLang });
+    } else if (waited >= 2000) {
+      clearInterval(interval);
+      console.error("[Translator] Port never connected after injection (timeout 2s)");
+    }
+  }, 50);
+}
+
 // --- Event Handlers ---
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
@@ -271,38 +348,14 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
 
     console.log(`[Translator] Saved targetLanguage = ${targetLang}`);
 
-    // Get the active message tab
-    const tabs = await messenger.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tabs.length) {
-      console.error("[Translator] No active tab found");
-      return;
-    }
-
-    const activeTab = tabs[0];
-    console.log("[Translator] Injecting content script into tab:", activeTab.id);
-
-    try {
-      // Inject the content script
-      await messenger.tabs.executeScript(activeTab.id, {
-        file: "content/translator.js",
-        runAt: "document_start"
-      });
-      console.log("[Translator] Content script injected successfully");
-
-      // Wait a bit for the script to connect
-      setTimeout(() => {
-        if (activePort) {
-          console.log("[Translator] Sending startTranslation command with target:", targetLang);
-          activePort.postMessage({
-            command: "startTranslation",
-            targetLanguage: targetLang
-          });
-        } else {
-          console.error("[Translator] Still no active port after injection");
-        }
-      }, 100);
-    } catch (e) {
-      console.error("[Translator] Error injecting content script:", e);
+    // content/translator.js is auto-loaded via message_display_scripts.
+    // If port is active send directly, otherwise inject as fallback.
+    if (activePort) {
+      console.log("[Translator] Port active, sending startTranslation with target:", targetLang);
+      activePort.postMessage({ command: "startTranslation", targetLanguage: targetLang });
+    } else {
+      console.log("[Translator] No active port, attempting injection as fallback");
+      await injectAndSend(targetLang);
     }
   } else if (info.menuItemId === "toggle-original") {
     if (activePort) {
