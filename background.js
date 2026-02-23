@@ -49,38 +49,41 @@ async function getSettings() {
 
 // --- Context Menu ---
 
-let menuCreated = false;
+// Serialize menu creation: queue at most one pending rebuild
+let menuCreateChain = Promise.resolve();
+let menuPendingCount = 0;
 
-async function createContextMenu() {
-  try {
-    const settings = await getSettings();
-    const { targetLanguage } = settings;
+function createContextMenu() {
+  if (menuPendingCount >= 1) return;
+  menuPendingCount++;
+  menuCreateChain = menuCreateChain.then(async () => {
+    menuPendingCount--;
+    try {
+      const settings = await getSettings();
+      const { targetLanguage } = settings;
 
-    // Remove all existing menus first (only if already created)
-    if (menuCreated) {
+      // Always remove all menus first to avoid ID conflicts
       await messenger.menus.removeAll();
+
+      const languages = Object.keys(LANGUAGE_NAMES);
+
+      for (const langCode of languages) {
+        const langName = LANGUAGE_NAMES[langCode];
+        const isSelected = langCode === targetLanguage;
+        const title = isSelected ? toBold(langName) : langName;
+
+        await messenger.menus.create({
+          id: `translate-${langCode}`,
+          title: title,
+          contexts: ["all"],
+        });
+      }
+
+      console.log(`[Translator] Created ${languages.length} language options attached to extension parent`);
+    } catch (e) {
+      console.warn("[Translator] Error in createContextMenu:", e.message);
     }
-
-    const languages = Object.keys(LANGUAGE_NAMES);
-
-    // Create language menu items directly (attached to implicit parent)
-    for (const langCode of languages) {
-      const langName = LANGUAGE_NAMES[langCode];
-      const isSelected = langCode === targetLanguage;
-      const title = isSelected ? toBold(langName) : langName;
-
-      await messenger.menus.create({
-        id: `translate-${langCode}`,
-        title: title,
-        contexts: ["all"],
-      });
-    }
-
-    menuCreated = true;
-    console.log(`[Translator] Created ${languages.length} language options attached to extension parent`);
-  } catch (e) {
-    console.warn("[Translator] Error in createContextMenu:", e.message);
-  }
+  });
 }
 
 // --- Initialize context menu on startup and install ---
