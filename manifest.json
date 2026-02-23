@@ -23,8 +23,12 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "message_display_scripts": [
-    "content/translator.js"
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content/translator.js"],
+      "run_at": "document_idle"
+    }
   ],
   "options_ui": {
     "page": "options/options.html"
