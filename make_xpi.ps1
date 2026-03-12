@@ -1,5 +1,7 @@
 $src = 'C:\Users\giuli\Documents\GitHub\thunderbird-ollama-translator'
-$xpiPath = Join-Path $src 'thunderbird-ollama-translator.xpi'
+$manifest = Get-Content (Join-Path $src 'manifest.json') | ConvertFrom-Json
+$version = $manifest.version
+$xpiPath = Join-Path $src "thunderbird-ollama-translator-v$version.xpi"
 
 if (Test-Path $xpiPath) { Remove-Item $xpiPath -Force }
 
@@ -35,4 +37,4 @@ Get-ChildItem -Path (Join-Path $src '_locales') -Recurse -File | ForEach-Object 
 
 $zip.Dispose()
 $size = (Get-Item $xpiPath).Length
-Write-Host "XPI created: $xpiPath ($size bytes)"
+Write-Host "XPI created: thunderbird-ollama-translator-v$version.xpi ($size bytes)"
