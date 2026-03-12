@@ -111,9 +111,11 @@ messenger.storage.onChanged.addListener(async (changes, area) => {
 // lastActivePort is used as fallback when tab info is unavailable.
 const portMap = new Map();
 let lastActivePort = null;
+let lastClickedPort = null; // port that received the most recent contextmenu event
 
 function getPortForTab(tabId) {
   if (tabId != null && portMap.has(tabId)) return portMap.get(tabId);
+  if (lastClickedPort) return lastClickedPort;
   return lastActivePort;
 }
 
@@ -136,6 +138,11 @@ messenger.runtime.onConnect.addListener((port) => {
 
   // Handle messages from content script through the port
   port.onMessage.addListener(async (message) => {
+    if (message.command === "contextmenu") {
+      lastClickedPort = port;
+      return;
+    }
+
     if (message.command === "getMessages") {
       // Send localized messages to content script
       const getMsg = (key, fallback) => {
