@@ -75,7 +75,7 @@ function createContextMenu() {
         await messenger.menus.create({
           id: `translate-${langCode}`,
           title: title,
-          contexts: ["all"],
+          contexts: ["page", "frame", "selection"],
         });
       }
 
@@ -107,20 +107,30 @@ messenger.storage.onChanged.addListener(async (changes, area) => {
 
 // --- Port-based communication with content scripts ---
 
-// Most recent port from a message display content script.
-// Each new message display replaces the previous one.
-let activePort = null;
+// Map from tabId → port for all connected content scripts.
+// lastActivePort is used as fallback when tab info is unavailable.
+const portMap = new Map();
+let lastActivePort = null;
+
+function getPortForTab(tabId) {
+  if (tabId != null && portMap.has(tabId)) return portMap.get(tabId);
+  return lastActivePort;
+}
 
 messenger.runtime.onConnect.addListener((port) => {
   if (port.name !== "translator") return;
 
-  console.log("[Translator] Content script connected");
-  activePort = port;
+  const tabId = port.sender?.tab?.id ?? null;
+  console.log("[Translator] Content script connected, tabId:", tabId);
+
+  if (tabId != null) portMap.set(tabId, port);
+  lastActivePort = port;
 
   port.onDisconnect.addListener(() => {
-    console.log("[Translator] Content script disconnected");
-    if (activePort === port) {
-      activePort = null;
+    console.log("[Translator] Content script disconnected, tabId:", tabId);
+    if (tabId != null) portMap.delete(tabId);
+    if (lastActivePort === port) {
+      lastActivePort = portMap.size > 0 ? [...portMap.values()].at(-1) : null;
     }
   });
 
@@ -177,7 +187,7 @@ messenger.runtime.onConnect.addListener((port) => {
         await messenger.menus.create({
           id: "toggle-original",
           title: messenger.i18n.getMessage("showOriginal"),
-          contexts: ["all"],
+          contexts: ["page", "frame", "selection"],
         });
       } catch (_) {
         messenger.menus.update("toggle-original", {
@@ -264,18 +274,20 @@ let toggleMenuCreated = false;
 // and is automatically loaded by Thunderbird whenever a message is displayed.
 // This function is only called when the port is not yet active.
 
-async function injectAndSend(targetLang) {
-  let tabId = null;
+async function injectAndSend(targetLang, preferredTabId = null) {
+  let tabId = preferredTabId;
 
   // Strategy 1: dedicated messageDisplay tab (email in separate window)
-  try {
-    const msgTabs = await messenger.tabs.query({ type: "messageDisplay" });
-    if (msgTabs.length > 0) {
-      tabId = msgTabs[0].id;
-      console.log("[Translator] Found messageDisplay tab:", tabId);
+  if (tabId === null) {
+    try {
+      const msgTabs = await messenger.tabs.query({ type: "messageDisplay" });
+      if (msgTabs.length > 0) {
+        tabId = msgTabs[0].id;
+        console.log("[Translator] Found messageDisplay tab:", tabId);
+      }
+    } catch (e) {
+      console.warn("[Translator] tabs.query messageDisplay failed:", e.message);
     }
-  } catch (e) {
-    console.warn("[Translator] tabs.query messageDisplay failed:", e.message);
   }
 
   // Strategy 2: active mail tab (3-pane view)
@@ -321,14 +333,16 @@ async function injectAndSend(targetLang) {
     }
   }
 
-  // Poll for port connection then send the command
+  // Poll for port connection by tabId, then send the command
+  const resolvedTabId = tabId;
   let waited = 0;
   const interval = setInterval(() => {
     waited += 50;
-    if (activePort) {
+    const port = getPortForTab(resolvedTabId);
+    if (port) {
       clearInterval(interval);
       console.log("[Translator] Port connected after injection, sending startTranslation");
-      activePort.postMessage({ command: "startTranslation", targetLanguage: targetLang });
+      port.postMessage({ command: "startTranslation", targetLanguage: targetLang });
     } else if (waited >= 2000) {
       clearInterval(interval);
       console.error("[Translator] Port never connected after injection (timeout 2s)");
@@ -342,7 +356,8 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
   // Check if it's a translate menu item
   if (info.menuItemId.startsWith("translate-")) {
     const targetLang = info.menuItemId.replace("translate-", "");
-    console.log(`[Translator] Translate to '${targetLang}' (${LANGUAGE_NAMES[targetLang]}) menu clicked`);
+    const tabId = tab?.id ?? null;
+    console.log(`[Translator] Translate to '${targetLang}' (${LANGUAGE_NAMES[targetLang]}) menu clicked, tabId:`, tabId);
 
     // Save the selected language
     await messenger.storage.local.set({
@@ -351,20 +366,20 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
 
     console.log(`[Translator] Saved targetLanguage = ${targetLang}`);
 
-    // content/translator.js is auto-loaded via message_display_scripts.
-    // If port is active send directly, otherwise inject as fallback.
-    if (activePort) {
-      console.log("[Translator] Port active, sending startTranslation with target:", targetLang);
-      activePort.postMessage({ command: "startTranslation", targetLanguage: targetLang });
+    // Find the port for the tab where the menu was clicked
+    const port = getPortForTab(tabId);
+    if (port) {
+      console.log("[Translator] Port active for tab", tabId, ", sending startTranslation with target:", targetLang);
+      port.postMessage({ command: "startTranslation", targetLanguage: targetLang });
     } else {
-      console.log("[Translator] No active port, attempting injection as fallback");
-      await injectAndSend(targetLang);
+      console.log("[Translator] No active port for tab", tabId, ", attempting injection as fallback");
+      await injectAndSend(targetLang, tabId);
     }
   } else if (info.menuItemId === "toggle-original") {
-    if (activePort) {
-      activePort.postMessage({
-        command: "reloadOriginal",
-      });
+    const tabId = tab?.id ?? null;
+    const port = getPortForTab(tabId);
+    if (port) {
+      port.postMessage({ command: "reloadOriginal" });
     }
   }
 });
