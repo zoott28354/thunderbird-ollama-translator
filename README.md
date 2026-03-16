@@ -162,10 +162,16 @@ No access to:
    setx OLLAMA_ORIGINS "moz-extension://*"
    ```
 
-   **Linux/Mac:**
+   **Linux:**
    ```bash
    echo 'export OLLAMA_ORIGINS="moz-extension://*"' >> ~/.bashrc
    source ~/.bashrc
+   ```
+
+   **macOS:**
+   ```bash
+   echo 'export OLLAMA_ORIGINS="moz-extension://*"' >> ~/.zshrc
+   source ~/.zshrc
    ```
 
 3. **Close and reopen the terminal**, then start Ollama:
